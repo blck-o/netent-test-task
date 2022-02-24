@@ -64,4 +64,3 @@ public abstract class AbstractInteractiveGame extends AbstractGame {
     }
 
 }
-
