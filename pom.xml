@@ -23,6 +23,8 @@
     <module>framework</module>
     <module>slotgame</module>
     <module>bonusgame</module>
+    <module>menu</module>
+    <module>menu</module>
   </modules>
 
   <packaging>pom</packaging>

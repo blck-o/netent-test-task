@@ -12,7 +12,7 @@ import com.netent.games.simplegames.slotgame.round.NormalRound;
 import java.util.Map;
 import lombok.Getter;
 
-class SlotGame extends AbstractGame implements Game {
+public class SlotGame extends AbstractGame implements Game {
 
     @Getter
     private final Round defaultRound = new NormalRound();
