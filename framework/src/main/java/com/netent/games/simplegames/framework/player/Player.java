@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@ToString(of = {"totalBet", "totalWin"})
+@ToString(of = {"wallet", "totalBet", "totalWin"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Player {
 

@@ -2,9 +2,9 @@ package com.netent.games.simplegames.bonusgame.round;
 
 import com.netent.games.simplegames.framework.game.round.Round;
 import com.netent.games.simplegames.framework.player.Player;
+import com.netent.games.simplegames.framework.util.ScannerUtil;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
 import lombok.AccessLevel;
@@ -16,6 +16,13 @@ public class BoxPickingRound implements Round {
 
     private final Box[] boxes;
     private final Player player = Player.player();
+    @Getter
+    private final String description = """
+        In this game the player is given five boxes. One of the boxes will end the game, while
+        the rest contain 5 coins each. The values should be assigned to the boxes
+        randomly when the user enters the bonus round from the basic round. Each box
+        can only be opened once and the game ends when the end-game box is picked
+        """;
 
     public BoxPickingRound() {
         int boxSize = 5;
@@ -40,11 +47,15 @@ public class BoxPickingRound implements Round {
         try (var scanner = new Scanner(System.in)) {
             do {
                 System.out.println("enter box index:");
-                String step = scanner.next();
-                var status = processingStep(step);
+                var step = scanner.next();
+                var inputOptional = ScannerUtil.tryParseInt(step);
 
-                if (ProcessingStatus.END == status) {
-                    System.out.println("end game");
+                if (inputOptional.isEmpty()) {
+                    continue;
+                }
+
+                var input = inputOptional.get();
+                if (!processingStep(input)) {
                     break;
                 }
             } while (true);
@@ -55,47 +66,26 @@ public class BoxPickingRound implements Round {
         }
     }
 
-    private ProcessingStatus processingStep(String step) {
-        var integerOptional = tryParseInt(step);
-
-        if (integerOptional.isEmpty()) {
-            return ProcessingStatus.RETRY;
+    private boolean processingStep(int index) {
+        if (index >= boxes.length) {
+            return true;
         }
 
-        int boxIndex = integerOptional.get();
-
-        if (boxIndex > boxes.length) {
-            return ProcessingStatus.RETRY;
-        }
-
-        var box = boxes[boxIndex];
+        var box = boxes[index];
 
         if (box.isOpened()) {
-            return ProcessingStatus.RETRY;
+            return true;
         } else if (box.getValue() == null) {
-            return ProcessingStatus.END;
+            return false;
         }
 
         box.setOpened(true);
 
-        if (isEndOfGame()) {
-            return ProcessingStatus.END;
-        }
-
-        return ProcessingStatus.PROCESSED;
+        return !isEndOfGame();
     }
 
     private boolean isEndOfGame() {
-        return Arrays.stream(boxes)
-            .allMatch(Box::isOpened);
-    }
-
-    private Optional<Integer> tryParseInt(String input) {
-        try {
-            return Optional.of(Integer.parseInt(input));
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
-        }
+        return Arrays.stream(boxes).allMatch(Box::isOpened);
     }
 
     private void submitResult() {
@@ -107,13 +97,6 @@ public class BoxPickingRound implements Round {
             .sum();
 
         player.plus(score);
-    }
-
-
-    private enum ProcessingStatus {
-        END,
-        PROCESSED,
-        RETRY
     }
 
     @Getter

@@ -9,10 +9,14 @@ import lombok.Setter;
 
 public abstract class AbstractGame {
 
+    private static final String DEFAULT_DESCRIPTION = "" ;
     protected final Player player = Player.player();
-
     @Setter
     private Round currentRound;
+
+    protected String getDescription() {
+        return DEFAULT_DESCRIPTION;
+    }
 
     protected Round getCurrentRound() {
         if (currentRound == null) {
